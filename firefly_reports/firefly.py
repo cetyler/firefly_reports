@@ -81,7 +81,96 @@ class Firefly:
         net_change = summary["balance-in-" + currency_name]["monetary_value"]
 
         return {
-            "spent": spent,
-            "earned": earned,
-            "net_change": net_change,
+            "spent": float(spent),
+            "earned": float(earned),
+            "net_change": float(net_change),
         }
+
+@dataclass
+class EmailReport(Firefly):
+    start_date: datetime.date
+    end_date: datetime.date
+
+    def create_report(self):
+        about = self.get_about()
+        categories = self.category_report(start_date=self.start_date,end_date=self.end_date)
+        summary = self.summary_report(start_date=self.start_date,end_date=self.end_date)
+        start_date_ytd = datetime.date(self.start_date.year,1,1)
+        summary_ytd = self.summary_report(start_date=start_date_ytd,end_date=self.end_date)
+
+        # Set up the categories table
+        categoriesTableBody = (
+            '<table><tr><th>Category</th><th style="text-align: right;">Total</th></tr>'
+        )
+        for category in categories:
+            categoriesTableBody += (
+                    '<tr><td style="padding-right: 1em;">'
+                    + category["name"]
+                    + '</td><td style="text-align: right;">'
+                    + str(round(float(category["total"]))).replace("-", "−")
+                    + "</td></tr>"
+            )
+
+        categoriesTableBody += "</table>"
+
+        # Set up the general information table
+        generalTableBody = "<table>"
+        generalTableBody += (
+                '<tr><td>Spent this month:</td><td style="text-align: right;">'
+                + str(round(summary["spent"])).replace("-", "−")
+                + "</td></tr>"
+        )
+        generalTableBody += (
+                '<tr><td>Earned this month:</td><td style="text-align: right;">'
+                + str(round(summary["earned"])).replace("-", "−")
+                + "</td></tr>"
+        )
+        generalTableBody += (
+                '<tr style="border-bottom: 1px solid black"><td>Net change this month:</td><td style="text-align: right;">'
+                + str(round(summary["net_change"])).replace("-", "−")
+                + "</td></tr>"
+        )
+        generalTableBody += (
+                '<tr><td>Spent so far this year:</td><td style="text-align: right;">'
+                + str(round(summary_ytd["spent"])).replace("-", "−")
+                + "</td></tr>"
+        )
+        generalTableBody += (
+                '<tr><td>Earned so far this year:</td><td style="text-align: right;">'
+                + str(round(summary_ytd["earned"])).replace("-", "−")
+                + "</td></tr>"
+        )
+        generalTableBody += (
+                '<tr style="border-bottom: 1px solid black"><td style="padding-right: 1em;">Net change so far this year:</td><td style="text-align: right;">'
+                + str(round(summary_ytd["net_change"])).replace("-", "−")
+                + "</td></tr>"
+        )
+        # generalTableBody += (
+        #         '<tr><td>Current net worth:</td><td style="text-align: right;">'
+        #         + str(round(netWorth)).replace("-", "−")
+        #         + "</td></tr>"
+        # )
+        generalTableBody += "</table>"
+
+        monthName = self.start_date.strftime("%B")
+
+        htmlBody = """
+                <html>
+                    <head>
+                        <style>table{{border-collapse: collapse; border-top: 1px solid black; border-bottom: 1px solid black;}} th {{border-bottom: 1px solid black; padding: 0.33em 1em 0.33em 1em;}} td{{padding: .1em;}} tr:nth-child(even) {{background: #EEE}} tr:nth-child(odd) {{background: #FFF}}</style>
+                    </head>
+                    <body>
+                        <p>Monthly report for {monthName} {year}:</p>
+                        {categoriesTableBody}
+                        <p>General information:</p>
+                        {generalTableBody}
+                    </body>
+                </html>
+                """.format(
+            monthName=monthName,
+            year=self.start_date.strftime("%Y"),
+            categoriesTableBody=categoriesTableBody,
+            generalTableBody=generalTableBody,
+        )
+
+        return htmlBody

@@ -8,7 +8,7 @@ import smtplib
 import traceback
 
 @dataclass
-class EmailMessage:
+class Email:
     email_to: str
     email_from: str
     subject: str
@@ -24,7 +24,7 @@ class EmailMessage:
         msg = EmailMessage()
         msg["Subject"] = self.subject
         msg["From"] = self.email_from
-        msg["To"] = self.email_to
+        msg["To"] = tuple(self.email_to)
         msg.set_content(
             bs4.BeautifulSoup(self.body, "html.parser").get_text()
         )  # just html to text
