@@ -32,7 +32,7 @@ def main(config_file,start_date,end_date):
     email_message = Email(
         email_to=config["email"]["to"],
         email_from=config["email"]["from"],
-        subject="Test",
+        subject="Firefly Report",
         body=email_report,
         smtp_server=config["email"]["server"],
         smtp_port=config["email"]["port"],

@@ -116,17 +116,17 @@ class EmailReport(Firefly):
         # Set up the general information table
         generalTableBody = "<table>"
         generalTableBody += (
-                '<tr><td>Spent this month:</td><td style="text-align: right;">'
+                '<tr><td>Spent this period:</td><td style="text-align: right;">'
                 + str(round(summary["spent"])).replace("-", "−")
                 + "</td></tr>"
         )
         generalTableBody += (
-                '<tr><td>Earned this month:</td><td style="text-align: right;">'
+                '<tr><td>Earned this period:</td><td style="text-align: right;">'
                 + str(round(summary["earned"])).replace("-", "−")
                 + "</td></tr>"
         )
         generalTableBody += (
-                '<tr style="border-bottom: 1px solid black"><td>Net change this month:</td><td style="text-align: right;">'
+                '<tr style="border-bottom: 1px solid black"><td>Net change this period:</td><td style="text-align: right;">'
                 + str(round(summary["net_change"])).replace("-", "−")
                 + "</td></tr>"
         )
@@ -152,6 +152,8 @@ class EmailReport(Firefly):
         # )
         generalTableBody += "</table>"
 
+        about_body = f"""<p>Firefly version: {about["version"]}</p>"""
+
         monthName = self.start_date.strftime("%B")
 
         htmlBody = """
@@ -160,17 +162,21 @@ class EmailReport(Firefly):
                         <style>table{{border-collapse: collapse; border-top: 1px solid black; border-bottom: 1px solid black;}} th {{border-bottom: 1px solid black; padding: 0.33em 1em 0.33em 1em;}} td{{padding: .1em;}} tr:nth-child(even) {{background: #EEE}} tr:nth-child(odd) {{background: #FFF}}</style>
                     </head>
                     <body>
-                        <p>Monthly report for {monthName} {year}:</p>
+                        <p>Report from {start_date} to {end_date}:</p>
                         {categoriesTableBody}
                         <p>General information:</p>
                         {generalTableBody}
+                        {about_body}
                     </body>
                 </html>
                 """.format(
-            monthName=monthName,
-            year=self.start_date.strftime("%Y"),
+            # monthName=monthName,
+            # year=self.start_date.strftime("%Y"),
             categoriesTableBody=categoriesTableBody,
             generalTableBody=generalTableBody,
+            start_date=self.start_date,
+            end_date=self.end_date,
+            about_body=about_body,
         )
 
         return htmlBody
