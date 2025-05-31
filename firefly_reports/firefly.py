@@ -3,6 +3,7 @@ from typing import Dict, Any, List
 import requests
 import datetime
 import re
+from .__init__ import __version__
 
 @dataclass
 class Firefly:
@@ -91,6 +92,18 @@ class EmailReport(Firefly):
     start_date: datetime.date
     end_date: datetime.date
 
+    def get_ordinal_suffix(self,day: int) -> str:
+        if 11 <= day <= 13:
+            return 'th'
+        else:
+            suffixes = {1: 'st', 2: 'nd', 3: 'rd'}
+            return suffixes.get(day % 10, 'th')
+
+    def format_date_with_ordinal(self,date: datetime) -> str:
+        day = date.day
+        suffix = self.get_ordinal_suffix(day)
+        return date.strftime(f'%A %B {day}{suffix}, %Y')
+
     def create_report(self):
         about = self.get_about()
         categories = self.category_report(start_date=self.start_date,end_date=self.end_date)
@@ -99,11 +112,11 @@ class EmailReport(Firefly):
         summary_ytd = self.summary_report(start_date=start_date_ytd,end_date=self.end_date)
 
         # Set up the categories table
-        categoriesTableBody = (
+        categories_table_body = (
             '<table><tr><th>Category</th><th style="text-align: right;">Total</th></tr>'
         )
         for category in categories:
-            categoriesTableBody += (
+            categories_table_body += (
                     '<tr><td style="padding-right: 1em;">'
                     + category["name"]
                     + '</td><td style="text-align: right;">'
@@ -111,36 +124,36 @@ class EmailReport(Firefly):
                     + "</td></tr>"
             )
 
-        categoriesTableBody += "</table>"
+        categories_table_body += "</table>"
 
         # Set up the general information table
-        generalTableBody = "<table>"
-        generalTableBody += (
+        general_table_body = "<table>"
+        general_table_body += (
                 '<tr><td>Spent this period:</td><td style="text-align: right;">'
                 + str(round(summary["spent"])).replace("-", "−")
                 + "</td></tr>"
         )
-        generalTableBody += (
+        general_table_body += (
                 '<tr><td>Earned this period:</td><td style="text-align: right;">'
                 + str(round(summary["earned"])).replace("-", "−")
                 + "</td></tr>"
         )
-        generalTableBody += (
+        general_table_body += (
                 '<tr style="border-bottom: 1px solid black"><td>Net change this period:</td><td style="text-align: right;">'
                 + str(round(summary["net_change"])).replace("-", "−")
                 + "</td></tr>"
         )
-        generalTableBody += (
+        general_table_body += (
                 '<tr><td>Spent so far this year:</td><td style="text-align: right;">'
                 + str(round(summary_ytd["spent"])).replace("-", "−")
                 + "</td></tr>"
         )
-        generalTableBody += (
+        general_table_body += (
                 '<tr><td>Earned so far this year:</td><td style="text-align: right;">'
                 + str(round(summary_ytd["earned"])).replace("-", "−")
                 + "</td></tr>"
         )
-        generalTableBody += (
+        general_table_body += (
                 '<tr style="border-bottom: 1px solid black"><td style="padding-right: 1em;">Net change so far this year:</td><td style="text-align: right;">'
                 + str(round(summary_ytd["net_change"])).replace("-", "−")
                 + "</td></tr>"
@@ -150,33 +163,25 @@ class EmailReport(Firefly):
         #         + str(round(netWorth)).replace("-", "−")
         #         + "</td></tr>"
         # )
-        generalTableBody += "</table>"
+        general_table_body += "</table>"
 
-        about_body = f"""<p>Firefly version: {about["version"]}</p>"""
+        about_body = f"""<p>Firefly version: {about["version"]}</p><p>Report version: {__version__}</p>"""
 
         monthName = self.start_date.strftime("%B")
 
-        htmlBody = """
+        htmlBody = f"""
                 <html>
                     <head>
                         <style>table{{border-collapse: collapse; border-top: 1px solid black; border-bottom: 1px solid black;}} th {{border-bottom: 1px solid black; padding: 0.33em 1em 0.33em 1em;}} td{{padding: .1em;}} tr:nth-child(even) {{background: #EEE}} tr:nth-child(odd) {{background: #FFF}}</style>
                     </head>
                     <body>
-                        <p>Report from {start_date} to {end_date}:</p>
-                        {categoriesTableBody}
+                        <p>Report from {self.format_date_with_ordinal(self.start_date)} to {self.format_date_with_ordinal(self.end_date)}:</p>
+                        {categories_table_body}
                         <p>General information:</p>
-                        {generalTableBody}
+                        {general_table_body}
                         {about_body}
                     </body>
                 </html>
-                """.format(
-            # monthName=monthName,
-            # year=self.start_date.strftime("%Y"),
-            categoriesTableBody=categoriesTableBody,
-            generalTableBody=generalTableBody,
-            start_date=self.start_date,
-            end_date=self.end_date,
-            about_body=about_body,
-        )
+                """
 
         return htmlBody
