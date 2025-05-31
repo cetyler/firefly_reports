@@ -1,10 +1,8 @@
-## 0.2.1
-
-### Overview
+## Overview
 
 Initial working release.
 
-### Features
+## Features
 
 - Fixed: Forgot `tool.hatch.version` to enable dynamic in `pyproject.toml`. #1
 - Added: `README.md` have basic installation and running instructions. #3
