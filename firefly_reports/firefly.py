@@ -161,11 +161,6 @@ class EmailReport(Firefly):
                 + str(round(summary_ytd["net_change"])).replace("-", "−")
                 + "</td></tr>"
         )
-        # generalTableBody += (
-        #         '<tr><td>Current net worth:</td><td style="text-align: right;">'
-        #         + str(round(netWorth)).replace("-", "−")
-        #         + "</td></tr>"
-        # )
         general_table_body += "</table>"
 
         about_body = f"""<p>Firefly version: {about["version"]}</p><p>Report version: {__version__}</p>"""

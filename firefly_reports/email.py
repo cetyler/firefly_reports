@@ -43,7 +43,6 @@ class Email:
                 except:
                     traceback.print_exc()
                     print("ERROR: could not connect to SMTP server with STARTTLS")
-                    # sys.exit(2)
             if self.smtp_authentication:
                 try:
                     s.login(
@@ -52,5 +51,4 @@ class Email:
                 except:
                     traceback.print_exc()
                     print("ERROR: could not authenticate with SMTP server.")
-                    # sys.exit(3)
             s.send_message(msg)
