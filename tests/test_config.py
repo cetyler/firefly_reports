@@ -1,6 +1,9 @@
-import pytest
-from firefly_reports.config import get_config
 from pathlib import Path
+
+import pytest
+
+from firefly_reports.config import get_config
+
 
 def test_get_config():
     config = get_config(Path.cwd() / "example_config.toml")
