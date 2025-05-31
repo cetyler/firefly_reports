@@ -1,9 +1,12 @@
-from dataclasses import dataclass, field
-from typing import Dict, Any, List
-import requests
 import datetime
 import re
+from dataclasses import dataclass
+from typing import Any, Dict, List
+
+import requests
+
 from .__init__ import __version__
+
 
 @dataclass
 class Firefly:
@@ -166,8 +169,6 @@ class EmailReport(Firefly):
         general_table_body += "</table>"
 
         about_body = f"""<p>Firefly version: {about["version"]}</p><p>Report version: {__version__}</p>"""
-
-        monthName = self.start_date.strftime("%B")
 
         htmlBody = f"""
                 <html>

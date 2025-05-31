@@ -1,14 +1,17 @@
-import click
-from .config import get_config
-from .firefly import EmailReport
-from .email import Email
 import datetime
+
+import click
+
+from .config import get_config
+from .email import Email
+from .firefly import EmailReport
+
 
 @click.command()
 @click.argument('config_file', type=click.Path(exists=True))
 @click.option(
     "--start_date",
-    default=f"{datetime.date.today() - datetime.timedelta(days=30)}",
+    default=f"{datetime.date.today() - datetime.timedelta(days=7)}",
 type=click.DateTime(formats=["%Y-%m-%d"]),
 )
 @click.option(
