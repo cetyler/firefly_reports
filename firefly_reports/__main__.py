@@ -8,18 +8,18 @@ from .firefly import EmailReport
 
 
 @click.command()
-@click.argument('config_file', type=click.Path(exists=True))
+@click.argument("config_file", type=click.Path(exists=True))
 @click.option(
     "--start_date",
     default=f"{datetime.date.today() - datetime.timedelta(days=7)}",
-type=click.DateTime(formats=["%Y-%m-%d"]),
+    type=click.DateTime(formats=["%Y-%m-%d"]),
 )
 @click.option(
     "--end_date",
     default=f"{datetime.date.today()}",
-type=click.DateTime(formats=["%Y-%m-%d"]),
+    type=click.DateTime(formats=["%Y-%m-%d"]),
 )
-def main(config_file,start_date,end_date):
+def main(config_file, start_date, end_date):
     config = get_config(config_file)
 
     report = EmailReport(
@@ -27,7 +27,6 @@ def main(config_file,start_date,end_date):
         access_token=config["firefly"]["access_token"],
         start_date=start_date,
         end_date=end_date,
-
     )
 
     email_report = report.create_report()
