@@ -1,11 +1,8 @@
 ## Overview
 
-Initial working release.
+Minor release to add README and update some tooling.
 
 ## Features
 
-- Fixed: Forgot `tool.hatch.version` to enable dynamic in `pyproject.toml`. #1
 - Added: `README.md` have basic installation and running instructions. #3
-- Added: GitHub Actions for publishing, linting and testing. #2
-- Added: Basic tests. #4
-- Changed: Default start date from 30 days to 7 days from today.
+- Changed: Update to `astral-sh/setup-uv@v6`.
