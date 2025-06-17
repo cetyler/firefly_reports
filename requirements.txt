@@ -14,7 +14,7 @@ requests==2.32.4
     # via firefly-reports (pyproject.toml)
 soupsieve==2.7
     # via beautifulsoup4
-typing-extensions==4.13.2
+typing-extensions==4.14.0
     # via beautifulsoup4
 urllib3==2.4.0
     # via requests
