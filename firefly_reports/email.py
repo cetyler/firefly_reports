@@ -33,9 +33,7 @@ class Email:
         # Set up the SSL context for SMTP if necessary
         context = ssl.create_default_context()
 
-        with smtplib.SMTP(
-                host=self.smtp_server, port=self.smtp_port
-        ) as s:
+        with smtplib.SMTP(host=self.smtp_server, port=self.smtp_port) as s:
             if self.smtp_starttls:
                 s.ehlo()
                 try:
@@ -45,9 +43,7 @@ class Email:
                     print("ERROR: could not connect to SMTP server with STARTTLS")
             if self.smtp_authentication:
                 try:
-                    s.login(
-                        user=self.smtp_user, password=self.smtp_password
-                    )
+                    s.login(user=self.smtp_user, password=self.smtp_password)
                 except:
                     traceback.print_exc()
                     print("ERROR: could not authenticate with SMTP server.")

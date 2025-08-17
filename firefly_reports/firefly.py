@@ -37,7 +37,9 @@ class Firefly:
 
         return categories
 
-    def category_report(self,start_date: datetime.date, end_date: datetime.date) -> List[Dict[str, float]]:
+    def category_report(
+        self, start_date: datetime.date, end_date: datetime.date
+    ) -> List[Dict[str, float]]:
         header = {"Authorization": f"Bearer {self.access_token}"}
         categories_url = f"{self.url}/api/v1/categories"
 
@@ -69,9 +71,13 @@ class Firefly:
 
         return totals
 
-    def summary_report(self,start_date: datetime.date, end_date: datetime.date) -> Dict[str, float]:
+    def summary_report(
+        self, start_date: datetime.date, end_date: datetime.date
+    ) -> Dict[str, float]:
         header = {"Authorization": f"Bearer {self.access_token}"}
-        summary_url = f"{self.url}/api/v1/summary/basic?start={start_date}&end={end_date}"
+        summary_url = (
+            f"{self.url}/api/v1/summary/basic?start={start_date}&end={end_date}"
+        )
 
         with requests.Session() as session:
             session.headers.update(header)
@@ -90,29 +96,36 @@ class Firefly:
             "net_change": float(net_change),
         }
 
+
 @dataclass
 class EmailReport(Firefly):
     start_date: datetime.date
     end_date: datetime.date
 
-    def get_ordinal_suffix(self,day: int) -> str:
+    def get_ordinal_suffix(self, day: int) -> str:
         if 11 <= day <= 13:
-            return 'th'
+            return "th"
         else:
-            suffixes = {1: 'st', 2: 'nd', 3: 'rd'}
-            return suffixes.get(day % 10, 'th')
+            suffixes = {1: "st", 2: "nd", 3: "rd"}
+            return suffixes.get(day % 10, "th")
 
-    def format_date_with_ordinal(self,date: datetime) -> str:
+    def format_date_with_ordinal(self, date: datetime) -> str:
         day = date.day
         suffix = self.get_ordinal_suffix(day)
-        return date.strftime(f'%A %B {day}{suffix}, %Y')
+        return date.strftime(f"%A %B {day}{suffix}, %Y")
 
     def create_report(self):
         about = self.get_about()
-        categories = self.category_report(start_date=self.start_date,end_date=self.end_date)
-        summary = self.summary_report(start_date=self.start_date,end_date=self.end_date)
-        start_date_ytd = datetime.date(self.start_date.year,1,1)
-        summary_ytd = self.summary_report(start_date=start_date_ytd,end_date=self.end_date)
+        categories = self.category_report(
+            start_date=self.start_date, end_date=self.end_date
+        )
+        summary = self.summary_report(
+            start_date=self.start_date, end_date=self.end_date
+        )
+        start_date_ytd = datetime.date(self.start_date.year, 1, 1)
+        summary_ytd = self.summary_report(
+            start_date=start_date_ytd, end_date=self.end_date
+        )
 
         # Set up the categories table
         categories_table_body = (
@@ -120,11 +133,11 @@ class EmailReport(Firefly):
         )
         for category in categories:
             categories_table_body += (
-                    '<tr><td style="padding-right: 1em;">'
-                    + category["name"]
-                    + '</td><td style="text-align: right;">'
-                    + str(round(float(category["total"]))).replace("-", "−")
-                    + "</td></tr>"
+                '<tr><td style="padding-right: 1em;">'
+                + category["name"]
+                + '</td><td style="text-align: right;">'
+                + str(round(float(category["total"]))).replace("-", "−")
+                + "</td></tr>"
             )
 
         categories_table_body += "</table>"
@@ -132,34 +145,34 @@ class EmailReport(Firefly):
         # Set up the general information table
         general_table_body = "<table>"
         general_table_body += (
-                '<tr><td>Spent this period:</td><td style="text-align: right;">'
-                + str(round(summary["spent"])).replace("-", "−")
-                + "</td></tr>"
+            '<tr><td>Spent this period:</td><td style="text-align: right;">'
+            + str(round(summary["spent"])).replace("-", "−")
+            + "</td></tr>"
         )
         general_table_body += (
-                '<tr><td>Earned this period:</td><td style="text-align: right;">'
-                + str(round(summary["earned"])).replace("-", "−")
-                + "</td></tr>"
+            '<tr><td>Earned this period:</td><td style="text-align: right;">'
+            + str(round(summary["earned"])).replace("-", "−")
+            + "</td></tr>"
         )
         general_table_body += (
-                '<tr style="border-bottom: 1px solid black"><td>Net change this period:</td><td style="text-align: right;">'
-                + str(round(summary["net_change"])).replace("-", "−")
-                + "</td></tr>"
+            '<tr style="border-bottom: 1px solid black"><td>Net change this period:</td><td style="text-align: right;">'
+            + str(round(summary["net_change"])).replace("-", "−")
+            + "</td></tr>"
         )
         general_table_body += (
-                '<tr><td>Spent so far this year:</td><td style="text-align: right;">'
-                + str(round(summary_ytd["spent"])).replace("-", "−")
-                + "</td></tr>"
+            '<tr><td>Spent so far this year:</td><td style="text-align: right;">'
+            + str(round(summary_ytd["spent"])).replace("-", "−")
+            + "</td></tr>"
         )
         general_table_body += (
-                '<tr><td>Earned so far this year:</td><td style="text-align: right;">'
-                + str(round(summary_ytd["earned"])).replace("-", "−")
-                + "</td></tr>"
+            '<tr><td>Earned so far this year:</td><td style="text-align: right;">'
+            + str(round(summary_ytd["earned"])).replace("-", "−")
+            + "</td></tr>"
         )
         general_table_body += (
-                '<tr style="border-bottom: 1px solid black"><td style="padding-right: 1em;">Net change so far this year:</td><td style="text-align: right;">'
-                + str(round(summary_ytd["net_change"])).replace("-", "−")
-                + "</td></tr>"
+            '<tr style="border-bottom: 1px solid black"><td style="padding-right: 1em;">Net change so far this year:</td><td style="text-align: right;">'
+            + str(round(summary_ytd["net_change"])).replace("-", "−")
+            + "</td></tr>"
         )
         general_table_body += "</table>"
 

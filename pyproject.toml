@@ -31,6 +31,7 @@ firefly_reports = { workspace = true}
 [dependency-groups]
 dev = [
     "coverage>=7.8.2",
+    "pre-commit>=4.2.0",
     "pytest>=8.3.5",
     "pytest-cov>=6.1.1",
     "pytest-picked>=0.5.1",
