@@ -1,8 +1,7 @@
 ## Overview
 
-Minor release to add README and update some tooling.
+Minor fix to up rev.
 
 ## Features
 
-- Added: `README.md` have basic installation and running instructions. #3
-- Changed: Update to `astral-sh/setup-uv@v6`.
+- Fixed: Forgot to up rev when releasing 0.3.0.
