@@ -27,6 +27,40 @@ class Firefly:
 
         return about
 
+    def get_budgets(self, start_date: datetime.date, end_date: datetime.date) -> List[Dict[str, Any]]:
+        header = {"Authorization": f"Bearer {self.access_token}"}
+        budgets_url = f"{self.url}/api/v1/budgets?start={start_date}&end={end_date}"
+
+        # TODO: Maybe use insight/expense/budget instead this will get totals.
+
+        with requests.Session() as session:
+            session.headers.update(header)
+            budgets = session.get(budgets_url).json()["data"]
+
+        return budgets
+
+    def budget_report(
+            self, start_date: datetime.date, end_date: datetime.date
+            ) -> Dict[str, float]:
+        
+        totals = list()
+        for budget in self.get_budgets(start_date=start_date, end_date=end_date):
+            breakpoint()
+            budget_items = budget["attributes"]
+            budget_name = budget_items["name"]
+            budget_spent = float(budget_items["spent"][0]["sum"])
+            budget_amount = budget_items["auto_budget_amount"]
+            budget_period = budget_items["auto_budget_period"]
+
+            totals.append(
+                    {
+                        "name": budget_name,
+                        "spent": budget_spent,
+                        "remaining": budget_left,
+
+
+        return budgets
+
     def get_categories(self) -> List[Dict[str, Any]]:
         header = {"Authorization": f"Bearer {self.access_token}"}
         categories_url = f"{self.url}/api/v1/categories"
@@ -97,6 +131,7 @@ class Firefly:
         }
 
 
+
 @dataclass
 class EmailReport(Firefly):
     start_date: datetime.date
@@ -116,6 +151,9 @@ class EmailReport(Firefly):
 
     def create_report(self):
         about = self.get_about()
+        budgets = self.budget_report(
+                start_date=self.start_date, end_date=self.end_date
+                )
         categories = self.category_report(
             start_date=self.start_date, end_date=self.end_date
         )
