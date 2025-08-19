@@ -10,7 +10,7 @@ click==8.2.1
     # via firefly-reports (pyproject.toml)
 idna==3.10
     # via requests
-requests==2.32.4
+requests==2.32.5
     # via firefly-reports (pyproject.toml)
 soupsieve==2.7
     # via beautifulsoup4
