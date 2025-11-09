@@ -11,7 +11,7 @@ repos:
 repos:
   - repo: https://github.com/astral-sh/uv-pre-commit
     # uv version.
-    rev: 0.8.11
+    rev: 0.9.8
     hooks:
       # Compile requirements
       - id: pip-compile
@@ -23,3 +23,5 @@ repos:
       #  files: ^requirements-dev\.(in|txt)$
       # Sync lock file
       - id: uv-lock
+      # Sync lock file to requirements.txt
+      - id: uv-export
