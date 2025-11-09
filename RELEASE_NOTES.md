@@ -1,7 +1,9 @@
 ## Overview
 
-Minor fix to up rev.
+Add Budget report.
 
 ## Features
 
-- Fixed: Forgot to up rev when releasing 0.3.0.
+- Added: Budget report added to the overall report.
+- Changed: Updated packages to latest.
+

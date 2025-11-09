@@ -27,6 +27,43 @@ class Firefly:
 
         return about
 
+    def get_budgets(self, start_date: datetime.date, end_date: datetime.date) -> List[Dict[str, Any]]:
+        header = {"Authorization": f"Bearer {self.access_token}"}
+        budgets_url = f"{self.url}/api/v1/budgets?start={start_date}&end={end_date}"
+
+        with requests.Session() as session:
+            session.headers.update(header)
+            budgets = session.get(budgets_url).json()["data"]
+
+        return budgets
+
+    def budget_report(
+            self, start_date: datetime.date, end_date: datetime.date
+            ) -> Dict[str, float]:
+
+        totals = list()
+        for budget in self.get_budgets(start_date=start_date, end_date=end_date):
+            budget_items = budget["attributes"]
+            budget_name = budget_items["name"]
+            try:
+                budget_spent = float(budget_items["spent"][0]["sum"])
+            except:
+                budget_spent = 0.1
+            budget_amount = budget_items["auto_budget_amount"]
+            budget_period = budget_items["auto_budget_period"]
+            budget_left = float(budget_amount) + float(budget_spent)
+
+            totals.append(
+                    {
+                        "name": budget_name,
+                        "spent": budget_spent,
+                        "remaining": budget_left,
+                        "budget_period": budget_period,
+                        }
+                    )
+
+        return totals
+
     def get_categories(self) -> List[Dict[str, Any]]:
         header = {"Authorization": f"Bearer {self.access_token}"}
         categories_url = f"{self.url}/api/v1/categories"
@@ -97,6 +134,7 @@ class Firefly:
         }
 
 
+
 @dataclass
 class EmailReport(Firefly):
     start_date: datetime.date
@@ -116,6 +154,9 @@ class EmailReport(Firefly):
 
     def create_report(self):
         about = self.get_about()
+        budgets = self.budget_report(
+                start_date=self.start_date, end_date=self.end_date
+                )
         categories = self.category_report(
             start_date=self.start_date, end_date=self.end_date
         )
@@ -141,6 +182,25 @@ class EmailReport(Firefly):
             )
 
         categories_table_body += "</table>"
+
+        # Set up the budget table
+        budgets_table_body = (
+            '<table><tr><th>Budget</th><th style="text-align: right;">Spent</th><th style="text-align: right;">Remaining</th><th style="text-align: right;">Period</th></tr>'
+        )
+        for budget in budgets:
+            budgets_table_body += (
+                '<tr><td style="padding-right: 1em;">'
+                + budget["name"]
+                + '</td><td style="text-align: right;">'
+                + str(round(float(budget["spent"]))).replace("-", "−")
+                + '</td><td style="text-align: right;">'
+                + str(round(float(budget["remaining"]))).replace("-", "−")
+                + '</td><td style="text-align: right;">'
+                + budget["budget_period"].capitalize()
+                + "</td></tr>"
+                )
+
+        budgets_table_body += "</table>"
 
         # Set up the general information table
         general_table_body = "<table>"
@@ -186,6 +246,8 @@ class EmailReport(Firefly):
                     <body>
                         <p>Report from {self.format_date_with_ordinal(self.start_date)} to {self.format_date_with_ordinal(self.end_date)}:</p>
                         {categories_table_body}
+                        <p></p>
+                        {budgets_table_body}
                         <p>General information:</p>
                         {general_table_body}
                         {about_body}
