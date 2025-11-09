@@ -40,7 +40,7 @@ class Firefly:
     def budget_report(
             self, start_date: datetime.date, end_date: datetime.date
             ) -> Dict[str, float]:
-        
+
         totals = list()
         for budget in self.get_budgets(start_date=start_date, end_date=end_date):
             budget_items = budget["attributes"]
@@ -58,6 +58,7 @@ class Firefly:
                         "name": budget_name,
                         "spent": budget_spent,
                         "remaining": budget_left,
+                        "budget_period": budget_period,
                         }
                     )
 
@@ -184,7 +185,7 @@ class EmailReport(Firefly):
 
         # Set up the budget table
         budgets_table_body = (
-            '<table><tr><th>Budget</th><th style="text-align: right;">Spent</th><th style="text-align: right;">Remaining</th></tr>'
+            '<table><tr><th>Budget</th><th style="text-align: right;">Spent</th><th style="text-align: right;">Remaining</th><th style="text-align: right;">Period</th></tr>'
         )
         for budget in budgets:
             budgets_table_body += (
@@ -194,6 +195,8 @@ class EmailReport(Firefly):
                 + str(round(float(budget["spent"]))).replace("-", "−")
                 + '</td><td style="text-align: right;">'
                 + str(round(float(budget["remaining"]))).replace("-", "−")
+                + '</td><td style="text-align: right;">'
+                + budget["budget_period"].capitalize()
                 + "</td></tr>"
                 )
 
