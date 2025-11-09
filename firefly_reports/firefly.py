@@ -30,13 +30,9 @@ class Firefly:
     def get_budgets(self, start_date: datetime.date, end_date: datetime.date) -> List[Dict[str, Any]]:
         header = {"Authorization": f"Bearer {self.access_token}"}
         budgets_url = f"{self.url}/api/v1/budgets?start={start_date}&end={end_date}"
-        #budgets_url = f"{self.url}/api/v1/insight/expense/budget?start={start_date}&end={end_date}"
-
-        # TODO: Maybe use insight/expense/budget instead this will get totals.
 
         with requests.Session() as session:
             session.headers.update(header)
-            #breakpoint()
             budgets = session.get(budgets_url).json()["data"]
 
         return budgets
@@ -46,13 +42,9 @@ class Firefly:
             ) -> Dict[str, float]:
         
         totals = list()
-        #self.get_budgets(start_date,end_date)
         for budget in self.get_budgets(start_date=start_date, end_date=end_date):
-            #breakpoint()
             budget_items = budget["attributes"]
             budget_name = budget_items["name"]
-            print(budget_name)
-            #breakpoint()
             try:
                 budget_spent = float(budget_items["spent"][0]["sum"])
             except:
@@ -69,7 +61,6 @@ class Firefly:
                         }
                     )
 
-        breakpoint()
         return totals
 
     def get_categories(self) -> List[Dict[str, Any]]:
@@ -191,6 +182,23 @@ class EmailReport(Firefly):
 
         categories_table_body += "</table>"
 
+        # Set up the budget table
+        budgets_table_body = (
+            '<table><tr><th>Budget</th><th style="text-align: right;">Spent</th><th style="text-align: right;">Remaining</th></tr>'
+        )
+        for budget in budgets:
+            budgets_table_body += (
+                '<tr><td style="padding-right: 1em;">'
+                + budget["name"]
+                + '</td><td style="text-align: right;">'
+                + str(round(float(budget["spent"]))).replace("-", "−")
+                + '</td><td style="text-align: right;">'
+                + str(round(float(budget["remaining"]))).replace("-", "−")
+                + "</td></tr>"
+                )
+
+        budgets_table_body += "</table>"
+
         # Set up the general information table
         general_table_body = "<table>"
         general_table_body += (
@@ -235,6 +243,8 @@ class EmailReport(Firefly):
                     <body>
                         <p>Report from {self.format_date_with_ordinal(self.start_date)} to {self.format_date_with_ordinal(self.end_date)}:</p>
                         {categories_table_body}
+                        <p></p>
+                        {budgets_table_body}
                         <p>General information:</p>
                         {general_table_body}
                         {about_body}
