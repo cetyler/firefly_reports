@@ -1,9 +1,9 @@
 ## Overview
 
-Add Budget report.
+Move budget report to the top.
 
 ## Features
 
-- Added: Budget report added to the overall report.
+- Added: Move budget to the top.
 - Changed: Updated packages to latest.
 

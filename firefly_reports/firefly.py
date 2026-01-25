@@ -245,9 +245,9 @@ class EmailReport(Firefly):
                     </head>
                     <body>
                         <p>Report from {self.format_date_with_ordinal(self.start_date)} to {self.format_date_with_ordinal(self.end_date)}:</p>
-                        {categories_table_body}
-                        <p></p>
                         {budgets_table_body}
+                        <p></p>
+                        {categories_table_body}
                         <p>General information:</p>
                         {general_table_body}
                         {about_body}
