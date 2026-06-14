@@ -1,9 +1,9 @@
 ## Overview
 
-Move budget report to the top.
+Add option to log.
 
 ## Features
 
-- Added: Move budget to the top.
-- Changed: Updated packages to latest.
-
+- Added: Logging by using log-to-db.
+- Added: helper.py.
+- Added: ROADMAP.md.

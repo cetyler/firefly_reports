@@ -5,6 +5,7 @@ import click
 from .config import get_config
 from .email import Email
 from .firefly import EmailReport
+from .setup_logging import config_logger
 
 
 @click.command()
@@ -21,6 +22,8 @@ from .firefly import EmailReport
 )
 def main(config_file, start_date, end_date):
     config = get_config(config_file)
+
+    db_logger = config_logger(config["database"])
 
     report = EmailReport(
         url=config["firefly"]["url"],

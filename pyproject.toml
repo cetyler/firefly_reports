@@ -12,6 +12,7 @@ requires-python = ">=3.12"
 dependencies = [
     "beautifulsoup4>=4.13.4",
     "click>=8.2.1",
+    "log-to-db>=0.3.1",
     "requests>=2.32.3",
 ]
 
