@@ -10,16 +10,18 @@ to = ["email1@example.com","email2@example.com"]
 
 [firefly]
 url = "http://firefly_instance:8085"
-access_token = "your_api_access_token_key"
+access_token = "your_api_access_token_key" # Note that the token will only last for around a year
 
 [logging]
 # See https://github.com/cetyler/log_to_db on how to setup database
-enable_logging = true          # Use false to disable logging, true to enable logging
-logging_database = "duckdb"    # duckdb, postgresql and sqlite are supported
+enable_logging = true                  # Use false to disable logging, true to enable logging
+save_level = "info"                    # Can only use debug, info, warning, error or critical
+timezone = "America/Los_Angeles"       # See https://nodatime.org/TimeZones to find the Zone ID
+logging_database = "duckdb"            # duckdb, postgresql and sqlite are supported
 database_location = "~/firefly.duckdb" # Will be ignored if database is set to postgresql
 username = "user"                      # Will only be used if database is set to postgresql
 password = "password"                  # Will only be used if database is set to postgresql
 address = "localhost"                  # Will only be used if database is set to postgresql
 port = 5432                            # Will only be used if database is set to postgresql
 database = "raw_data"                  # Will only be used if database is set to postgresql
-
+schema = "programs"                    # Will only be used if database is set to postgresql
